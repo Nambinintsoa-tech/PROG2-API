@@ -1,0 +1,209 @@
+openapi: 3.0.0
+info:
+  title: TD OpenAPI Specification - Exercice 6
+  version: 1.0.0
+components:
+  schemas:
+    CreateUserProfile:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        address_street:
+          type: string
+        address_city:
+          type: string
+        address_country:
+          type: string
+        address_postal_code:
+          type: integer
+        needs_newsletter:
+          type: boolean
+        language:
+          type: string
+          enum: [mg, fr, eng]
+    PersonalInfo:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+    Address:
+      type: object
+      properties:
+        address_street:
+          type: string
+        address_city:
+          type: string
+        address_country:
+          type: string
+        address_postal_code:
+          type: integer
+    Preferences:
+      type: object
+      properties:
+        needs_newsletter:
+          type: boolean
+        language:
+          type: string
+          enum: [mg, fr, eng]
+    UserProfile:
+      allOf:
+        - type: object
+          properties:
+            identifier:
+              type: string
+        - $ref: '#/components/schemas/CreateUserProfile'
+  parameters:
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+paths:
+  /users:
+    post:
+      summary: Create users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CreateUserProfile'
+            example:
+              - first_name: "John"
+                last_name: "Doe"
+                birthdate: "1990-01-01"
+                email: "john@example.com"
+                address_street: "123 Main St"
+                address_city: "City"
+                address_country: "Country"
+                address_postal_code: 12345
+                needs_newsletter: true
+                language: "fr"
+      responses:
+        '201':
+          description: Created users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+              example:
+                - identifier: "user1"
+                  first_name: "John"
+                  last_name: "Doe"
+                  birthdate: "1990-01-01"
+                  email: "john@example.com"
+                  address_street: "123 Main St"
+                  address_city: "City"
+                  address_country: "Country"
+                  address_postal_code: 12345
+                  needs_newsletter: true
+                  language: "fr"
+  /users/{id}:
+    get:
+      summary: Get user profile
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+              example:
+                identifier: "user1"
+                first_name: "John"
+                last_name: "Doe"
+                birthdate: "1990-01-01"
+                email: "john@example.com"
+                address_street: "123 Main St"
+                address_city: "City"
+                address_country: "Country"
+                address_postal_code: 12345
+                needs_newsletter: true
+                language: "fr"
+  /users/{id}/personalInfo:
+    put:
+      summary: Update personal info
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalInfo'
+            example:
+              first_name: "Jane"
+              last_name: "Doe"
+              birthdate: "1990-01-01"
+              email: "jane@example.com"
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalInfo'
+  /users/{id}/address:
+    put:
+      summary: Update address
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Address'
+            example:
+              address_street: "456 Elm St"
+              address_city: "New City"
+              address_country: "New Country"
+              address_postal_code: 67890
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+  /users/{id}/preferences:
+    put:
+      summary: Update preferences
+      parameters:
+        - $ref: '#/components/parameters/id'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Preferences'
+            example:
+              needs_newsletter: false
+              language: "eng"
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Preferences'
